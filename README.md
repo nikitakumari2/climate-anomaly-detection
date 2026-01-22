@@ -1,8 +1,8 @@
 # 🌡️ Climate Anomaly Detector
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://your-app-name.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://climate-anomaly-detection-nikitak.streamlit.app/)
 
-> **Live Demo:** [Deploy on Streamlit Cloud](https://share.streamlit.io)
+> **Live Demo:** [🌐 View Live App](https://climate-anomaly-detection-nikitak.streamlit.app/)
 
 A statistical dashboard that detects climate anomalies by comparing current weather conditions against 10 years of historical ERA5 reanalysis data. Unlike standard weather apps that only show current conditions, this tool provides climate context through Z-score statistical analysis.
 
@@ -169,9 +169,9 @@ The test suite covers:
    - Set main file to `app.py`
    - Click "Deploy"
 
-3. **Update README**
-   - Replace the Streamlit badge URL with your deployed app URL
-   - Add the live link to your resume/portfolio
+3. **Live App**
+   - 🌐 **Live URL:** [https://climate-anomaly-detection-nikitak.streamlit.app/](https://climate-anomaly-detection-nikitak.streamlit.app/)
+   - Add this link to your resume/portfolio
 
 ---
 
