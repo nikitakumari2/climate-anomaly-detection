@@ -4,6 +4,11 @@ __pycache__/
 *$py.class
 *.so
 .Python
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
 venv/
 env/
 ENV/
@@ -21,6 +26,7 @@ ENV/
 .coverage
 htmlcov/
 *.cover
+.tox/
 
 # Streamlit
 .streamlit/
@@ -29,5 +35,9 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Project specific
+# Logs
 *.log
+
+# Environment variables (if you add any later)
+.env
+.env.local

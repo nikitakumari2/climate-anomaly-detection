@@ -1,40 +1,28 @@
-# 🚀 Quick Start Guide
+# Quick Start
 
-## Step 1: Create Virtual Environment (Recommended)
+## Setup
 
 ```bash
 # Create virtual environment
 python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Activate it
-# On macOS/Linux:
-source venv/bin/activate
-
-# On Windows:
-# venv\Scripts\activate
-```
-
-## Step 2: Install Dependencies
-
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-## Step 3: Run the Application
-
-```bash
+# Run the app
 streamlit run app.py
 ```
 
-The app will automatically open in your browser at `http://localhost:8501`
+The app will open at `http://localhost:8501`
 
-## Step 4: Use the App
+## Usage
 
-1. Enter a city name in the sidebar (e.g., "New York", "London", "Tokyo")
-2. Click "🔍 Analyze Climate" button
-3. View the anomaly analysis and visualizations
+1. Enter a city name in the sidebar
+2. Click "Analyze Climate"
+3. View the results
 
-## Optional: Run Tests
+## Run Tests
 
 ```bash
 pytest tests/test_analysis.py -v
@@ -42,14 +30,10 @@ pytest tests/test_analysis.py -v
 
 ## Troubleshooting
 
-**If you get "command not found" errors:**
-- Make sure your virtual environment is activated (you should see `(venv)` in your terminal)
-- Try using `python3` instead of `python` if on macOS/Linux
+**Command not found:**
+- Make sure venv is activated (you should see `(venv)` in terminal)
+- Try `python3` instead of `python` on macOS/Linux
 
-**If Streamlit doesn't open automatically:**
-- Copy the URL from the terminal (usually `http://localhost:8501`)
-- Paste it into your browser
-
-**If you get import errors:**
-- Make sure you're in the project root directory
-- Verify all dependencies are installed: `pip list`
+**Import errors:**
+- Check you're in the project root directory
+- Verify dependencies: `pip list`
