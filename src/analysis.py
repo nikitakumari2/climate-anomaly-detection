@@ -1,7 +1,6 @@
 """
-Analysis Module - Statistical anomaly detection using Z-Score
-Implements seasonal decomposition by filtering historical data
-to match current month and hour for accurate baseline comparison
+Z-score based anomaly detection for climate data.
+Filters historical data by month/hour to account for seasonality.
 """
 
 import pandas as pd
@@ -16,54 +15,40 @@ def calculate_z_score(
     current_datetime: datetime,
 ) -> Tuple[float, float, float]:
     """
-    Calculate Z-score for anomaly detection using seasonal decomposition.
+    Calculates Z-score for anomaly detection.
     
-    Key Concept: Filter historical data to match the current month and hour
-    to account for seasonal patterns. This is more accurate than using
-    the entire year's average.
-    
-    Args:
-        current_value: Current measurement value
-        historical_data: Series of historical measurements with datetime index
-        current_datetime: Current datetime for seasonal filtering
-    
-    Returns:
-        Tuple of (z_score, mean, std_dev)
+    Filters historical data to match current month and hour to handle
+    seasonal patterns (e.g., comparing January temps to January, not July).
     """
     if historical_data.empty:
         return 0.0, 0.0, 0.0
     
-    # Seasonal Decomposition: Filter to same month and hour
-    # This accounts for seasonal patterns (e.g., January vs July temperatures)
     month = current_datetime.month
     hour = current_datetime.hour
     
-    # Filter historical data to match current month and hour
+    # Filter to same month and hour
     seasonal_filter = (historical_data.index.month == month) & (
         historical_data.index.hour == hour
     )
     seasonal_data = historical_data[seasonal_filter]
     
-    # If no seasonal match, fall back to same month only
+    # Fallback to same month only if no exact match
     if seasonal_data.empty:
         seasonal_filter = historical_data.index.month == month
         seasonal_data = historical_data[seasonal_filter]
     
-    # If still empty, use all data (fallback)
+    # Last resort: use all data
     if seasonal_data.empty:
         seasonal_data = historical_data
     
-    # Remove NaN values
     seasonal_data = seasonal_data.dropna()
     
     if len(seasonal_data) == 0:
         return 0.0, 0.0, 0.0
     
-    # Calculate statistics
     mean = float(seasonal_data.mean())
     std_dev = float(seasonal_data.std())
     
-    # Calculate Z-score
     if std_dev == 0:
         z_score = 0.0
     else:
@@ -73,16 +58,7 @@ def calculate_z_score(
 
 
 def detect_anomaly(z_score: float, threshold: float = 2.0) -> Tuple[bool, str]:
-    """
-    Determine if a Z-score indicates an anomaly.
-    
-    Args:
-        z_score: Calculated Z-score
-        threshold: Z-score threshold for anomaly detection (default: 2.0)
-    
-    Returns:
-        Tuple of (is_anomaly, severity_level)
-    """
+    """Classifies Z-score as normal or anomaly with severity level."""
     abs_z = abs(z_score)
     
     if abs_z >= threshold * 2:
@@ -97,16 +73,7 @@ def analyze_climate_anomalies(
     current_weather: Dict,
     historical_data: pd.DataFrame,
 ) -> Dict[str, Dict]:
-    """
-    Analyze all climate metrics for anomalies.
-    
-    Args:
-        current_weather: Dictionary with current weather measurements
-        historical_data: DataFrame with historical climate data
-    
-    Returns:
-        Dictionary with anomaly analysis for each metric
-    """
+    """Runs anomaly analysis for all climate metrics."""
     if historical_data is None or historical_data.empty:
         return {}
     

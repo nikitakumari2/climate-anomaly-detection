@@ -1,14 +1,6 @@
 """
-Data Ingestion Module - Fetches climate data from Open-Meteo API
-Uses ERA5 reanalysis data for historical climate context
-
-IMPORTANT: All APIs used here are 100% FREE - no API keys required, no cost.
-- Forecast API: https://api.open-meteo.com (free tier)
-- Archive API: https://archive-api.open-meteo.com (free tier)
-- Geocoding API: https://geocoding-api.open-meteo.com (free tier)
-
-Open-Meteo is an open-source weather API with generous rate limits.
-Caching is implemented to respect rate limits and improve performance.
+Fetches weather and climate data from Open-Meteo API.
+All APIs are free - no keys needed.
 """
 
 import pandas as pd
@@ -16,11 +8,10 @@ import requests
 from typing import Dict, Optional, Tuple
 from datetime import datetime, timedelta
 
-# Streamlit import with fallback for testing
+# Handle streamlit import for when running tests
 try:
     import streamlit as st
 except ImportError:
-    # Fallback for when streamlit is not available (e.g., during testing)
     class MockStreamlit:
         @staticmethod
         def error(msg):
@@ -35,20 +26,11 @@ except ImportError:
     st = MockStreamlit()
 
 
-@st.cache_data(ttl=3600)  # Cache for 1 hour to respect API rate limits
+@st.cache_data(ttl=3600)
 def fetch_current_weather(
     latitude: float, longitude: float
 ) -> Optional[Dict]:
-    """
-    Fetch current weather data for a given location.
-    
-    Args:
-        latitude: Latitude of the location
-        longitude: Longitude of the location
-    
-    Returns:
-        Dictionary containing current weather data or None if API call fails
-    """
+    """Gets current weather for a location."""
     try:
         url = "https://api.open-meteo.com/v1/forecast"
         params = {
@@ -79,21 +61,11 @@ def fetch_current_weather(
         return None
 
 
-@st.cache_data(ttl=86400)  # Cache for 24 hours (historical data doesn't change)
+@st.cache_data(ttl=86400)
 def fetch_historical_climate(
     latitude: float, longitude: float, years_back: int = 10
 ) -> Optional[pd.DataFrame]:
-    """
-    Fetch 10-year historical climate data using ERA5 reanalysis.
-    
-    Args:
-        latitude: Latitude of the location
-        longitude: Longitude of the location
-        years_back: Number of years of historical data to fetch (default: 10)
-    
-    Returns:
-        DataFrame with historical climate data or None if API call fails
-    """
+    """Fetches historical climate data from ERA5 reanalysis."""
     try:
         end_date = datetime.now()
         start_date = end_date - timedelta(days=365 * years_back)
@@ -128,15 +100,7 @@ def fetch_historical_climate(
 
 
 def get_coordinates(city_name: str) -> Optional[Tuple[float, float]]:
-    """
-    Get latitude and longitude for a city name using geocoding.
-    
-    Args:
-        city_name: Name of the city
-    
-    Returns:
-        Tuple of (latitude, longitude) or None if city not found
-    """
+    """Converts city name to lat/lon coordinates."""
     try:
         url = "https://geocoding-api.open-meteo.com/v1/search"
         params = {"name": city_name, "count": 1, "language": "en", "format": "json"}

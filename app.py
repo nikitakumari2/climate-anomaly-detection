@@ -1,6 +1,5 @@
 """
-Climate Anomaly Detector - Streamlit Frontend
-A thin controller that orchestrates the UI and calls backend functions
+Streamlit app for climate anomaly detection.
 """
 
 import streamlit as st
@@ -13,14 +12,12 @@ from src.api_client import (
 )
 from src.analysis import analyze_climate_anomalies
 
-# Page configuration
 st.set_page_config(
     page_title="Climate Anomaly Detector",
     page_icon="🌡️",
     layout="wide",
 )
 
-# Title and description
 st.title("🌡️ Climate Anomaly Detector")
 st.markdown(
     """
@@ -31,7 +28,6 @@ st.markdown(
     """
 )
 
-# Sidebar for user input
 st.sidebar.header("📍 Location Settings")
 
 city_name = st.sidebar.text_input(
@@ -52,10 +48,8 @@ st.sidebar.markdown(
     """
 )
 
-# Main content area
 if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
     with st.spinner("Fetching climate data..."):
-        # Get coordinates
         coords = get_coordinates(city_name)
         
         if coords is None:
@@ -63,7 +57,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
         else:
             latitude, longitude = coords
             
-            # Fetch data
             current_weather = fetch_current_weather(latitude, longitude)
             historical_data = fetch_historical_climate(latitude, longitude, years_back=10)
             
@@ -72,16 +65,13 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
             elif historical_data is None or historical_data.empty:
                 st.error("❌ Failed to fetch historical climate data. Please try again later.")
             else:
-                # Display location info
                 st.success(f"✅ Analyzing climate for: **{city_name}** ({latitude:.2f}°, {longitude:.2f}°)")
                 
-                # Perform analysis
                 anomalies = analyze_climate_anomalies(current_weather, historical_data)
                 
                 if not anomalies:
                     st.warning("⚠️ Could not perform analysis. Historical data may be incomplete.")
                 else:
-                    # Display metrics in columns
                     cols = st.columns(4)
                     
                     metric_names = {
@@ -102,7 +92,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                         if metric_key in anomalies:
                             data = anomalies[metric_key]
                             with cols[idx]:
-                                # Determine color based on anomaly status
                                 if data["is_anomaly"]:
                                     if data["severity"] == "Extreme":
                                         delta_color = "inverse"
@@ -114,7 +103,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                                     delta_color = "normal"
                                     delta_prefix = "✅ "
                                 
-                                # Calculate delta (difference from mean)
                                 delta_value = data["current"] - data["mean"]
                                 
                                 st.metric(
@@ -124,17 +112,14 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                                     delta_color=delta_color,
                                 )
                                 
-                                # Show Z-score and severity
                                 st.caption(
                                     f"Z-Score: {data['z_score']:.2f} | "
                                     f"Severity: {data['severity']}"
                                 )
                     
-                    # Detailed analysis section
                     st.markdown("---")
                     st.subheader("📈 Detailed Analysis")
                     
-                    # Create tabs for each metric
                     tabs = st.tabs(list(metric_names.values()))
                     
                     for tab_idx, (metric_key, _) in enumerate(metric_names.items()):
@@ -142,7 +127,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                             with tabs[tab_idx]:
                                 data = anomalies[metric_key]
                                 
-                                # Display statistics
                                 col1, col2, col3 = st.columns(3)
                                 
                                 with col1:
@@ -154,7 +138,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                                 with col3:
                                     st.metric("Standard Deviation", f"{data['std_dev']:.2f} {units[metric_key]}")
                                 
-                                # Z-score interpretation
                                 st.markdown("### 📊 Statistical Analysis")
                                 
                                 z_score = data["z_score"]
@@ -171,11 +154,9 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                                 
                                 st.info(interpretation)
                                 
-                                # Visualization
                                 if not historical_data.empty and metric_key in ["temperature", "humidity"]:
                                     st.markdown("### 📉 Historical Distribution")
                                     
-                                    # Get seasonal data for visualization
                                     current_time = datetime.now()
                                     month = current_time.month
                                     hour = current_time.hour
@@ -200,7 +181,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                                             ][column_name].dropna()
                                         
                                         if not seasonal_data.empty:
-                                            # Create histogram
                                             fig = go.Figure()
                                             
                                             fig.add_trace(
@@ -212,7 +192,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                                                 )
                                             )
                                             
-                                            # Add current value as vertical line
                                             fig.add_vline(
                                                 x=data["current"],
                                                 line_dash="dash",
@@ -221,7 +200,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                                                 annotation_position="top",
                                             )
                                             
-                                            # Add mean line
                                             fig.add_vline(
                                                 x=data["mean"],
                                                 line_dash="dot",
@@ -240,7 +218,6 @@ if st.sidebar.button("🔍 Analyze Climate", type="primary") or city_name:
                                             
                                             st.plotly_chart(fig, use_container_width=True)
 
-# Footer
 st.markdown("---")
 st.markdown(
     """
